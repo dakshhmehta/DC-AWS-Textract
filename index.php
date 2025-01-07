@@ -31,6 +31,26 @@ function extractVesselSailedTable($table)
     var_dump($data);
 }
 
+function search_table($needle, $haystack) {
+    // Loop through each element in the array
+    foreach ($haystack as $value) {
+        // Check if the current value is an array
+        if (is_array($value)) {
+            // Recursively call search_table on the sub-array
+            if (search_table($needle, $value)) {
+                return true; // If found in the sub-array, return true
+            }
+        } else {
+            // If the current value matches the needle, return true
+            if ($value === $needle) {
+                return true;
+            }
+        }
+    }
+    return false; // Return false if the needle is not found
+}
+
+
 // Handling file upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdf_file'])) {
     $file = $_FILES['pdf_file'];
@@ -55,11 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['pdf_file'])) {
 
         // Display the tables
         foreach ($tables as $tableIndex => $table) {
-            if ($tableIndex == 2) {
+            if(search_table('SAILED IN LAST 24', $table)){
                 extractVesselSailedTable($table);
             }
 
-            echo "<table border='1' cellpadding='5'>";
+            echo "<table border='1' cellpadding='5'><thead><tr><th>".$tableIndex."</th></tr></thead>";
 
             foreach ($table as $rowIndex => $row) {
                 echo '<tr>';
